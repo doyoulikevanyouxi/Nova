@@ -45,8 +45,8 @@ struct DendriteCluster {
     double diameter = 1.0;
 
     // ===== 簇参数 =====
-    double R_input = 1.0;
-    double tau_dendrite = 20.0;
+    double R_input = 2.0;   // 1.0 -> 2.0
+    double tau_dendrite = 10.0;   // 20.0 -> 10.0
     double theta_plateau = -60.0;
     double A_plateau = 1.0;
     double tau_plateau = 100.0;

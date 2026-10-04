@@ -99,6 +99,10 @@ public:
             clusters.push_back(cluster);
         }
 
+        for (auto& c : clusters) {
+            c.R_input = 2.0;
+            c.tau_dendrite = 10.0;
+        }
         soma.I_pace = type.soma_I_pace;
         soma.g_M = type.soma_g_M;
         soma.sigma_noise = type.soma_sigma_noise;

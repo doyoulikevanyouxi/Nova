@@ -105,9 +105,8 @@ struct Synapse {
     // ============================================================
     // STDP：突触前放电
     // ============================================================
-    // 更新 lastPreSpikeTime。
-    // 如果 post 最近放过（t > lastPostSpikeTime），触发 LTD。
-    double onPreSpike(double t, double dopamine) {
+
+    double onPreSpike(double t, double dopamine, double ach = 0.5) {
         lastPreSpikeTime = t;
 
         if (!isPlastic) return 0.0;
@@ -117,19 +116,16 @@ struct Synapse {
         double dw = 0.0;
 
         if (dt > 0.0 && dt < 5.0 * tauSTDP) {
-            // post 在 pre 之前 → 反因果 → LTD
             double daMod = (dopamine - 0.6) / 0.4;
-            dw = -ltdAmplitude * std::exp(-dt / tauSTDP) * daMod;
+            double achMod = 0.5 + ach;   // 0.5 到 1.5
+            dw = -ltdAmplitude * std::exp(-dt / tauSTDP) * daMod * achMod;
         }
 
         weight += dw;
-
-        // 权重钳制
         if (isExcitatory) {
             if (weight < weightMin) weight = weightMin;
             if (weight > weightMax) weight = weightMax;
         } else {
-            // 抑制性突触权重为负
             if (weight > weightMin) weight = weightMin;
             if (weight < weightMax) weight = weightMax;
         }
@@ -137,12 +133,8 @@ struct Synapse {
         return dw;
     }
 
-    // ============================================================
-    // STDP：突触后放电
-    // ============================================================
-    // 更新 lastPostSpikeTime。
-    // 如果 pre 最近放过（t > lastPreSpikeTime），触发 LTP。
-    double onPostSpike(double t, double dopamine) {
+    // ===== STDP：突触后放电 =====
+    double onPostSpike(double t, double dopamine, double ach = 0.5) {
         lastPostSpikeTime = t;
 
         if (!isPlastic) return 0.0;
@@ -152,14 +144,12 @@ struct Synapse {
         double dw = 0.0;
 
         if (dt > 0.0 && dt < 5.0 * tauSTDP) {
-            // pre 在 post 之前 → 因果 → LTP
             double daMod = (dopamine - 0.6) / 0.4;
-            dw = ltpAmplitude * std::exp(-dt / tauSTDP) * daMod;
+            double achMod = 0.5 + ach;
+            dw = ltpAmplitude * std::exp(-dt / tauSTDP) * daMod * achMod;
         }
 
         weight += dw;
-
-        // 权重钳制
         if (isExcitatory) {
             if (weight < weightMin) weight = weightMin;
             if (weight > weightMax) weight = weightMax;

@@ -26,6 +26,10 @@ add_executable(Nova
   core/Soma.h
   core/Neuron.h
   core/Network.h
+  core/NetworkGenome.h core/Region.h
+  core/MetabolicPool.h
+  core/ValenceSystem.h
+  core/CuriosityInterface.h
 )
 
 add_executable(test_ais
@@ -35,7 +39,6 @@ add_executable(test_ais
     core/NeuronParameters.h
     core/NeuronType.h
     core/Synapse.h
-
 )
 
 add_executable(test_synapse
@@ -136,6 +139,197 @@ add_executable(test_associative_learning
     core/AxonInitialSegment.h
     core/Synapse.h
     core/SynapsePopulation.h
+    core/RandomUtils.h
+)
+
+add_executable(test_oscillation
+    test/test_oscillation.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/RandomUtils.h
+)
+
+add_executable(test_lateral_inhibition
+    test/test_lateral_inhibition.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/RandomUtils.h
+)
+
+add_executable(test_competitive_learning
+    test/test_competitive_learning.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/RandomUtils.h
+)
+
+add_executable(test_multimodal_learning
+    test/test_multimodal_learning.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/RandomUtils.h
+)
+add_executable(test_regions
+    test/test_regions.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/RandomUtils.h
+)
+
+
+add_executable(test_genome
+    test/test_genome.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/RandomUtils.h
+)
+
+add_executable(test_signal_propagation
+    test/test_signal_propagation.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/RandomUtils.h
+)
+
+add_executable(test_modulation
+    test/test_modulation.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/RandomUtils.h
+)
+
+add_executable(test_metabolism
+    test/test_metabolism.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/MetabolicPool.h
+    core/RandomUtils.h
+)
+
+add_executable(test_valence
+    test/test_valence.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/MetabolicPool.h
+    core/ValenceSystem.h
+    core/RandomUtils.h
+)
+add_executable(test_curiosity
+    test/test_curiosity.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/MetabolicPool.h
+    core/ValenceSystem.h
+    core/CuriosityInterface.h
+    core/RandomUtils.h
+)
+
+add_executable(test_body_sense
+    test/test_body_sense.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/MetabolicPool.h
+    core/ValenceSystem.h
+    core/CuriosityInterface.h
     core/RandomUtils.h
 )
 target_link_libraries(Nova Qt${QT_VERSION_MAJOR}::Core)
