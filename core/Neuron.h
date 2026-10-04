@@ -40,10 +40,13 @@ public:
 
     // ===== 输出 =====
     bool hasSpiked = false;
-
+    double firingRate = 0.0;              // 放电率估计（Hz/1000）
+    double tau_firing_rate = 100.0;       // 平滑时间常数（ms）
     // ===== 突触列表（由 Network 填充）=====
     std::vector<int> outgoingSynapses;
     std::vector<int> incomingSynapses;
+
+
 
     // ===== 放电回调（由 Network 设置）=====
     std::function<void(int,
@@ -137,7 +140,11 @@ public:
         // 5. AIS 决定放电
         ais.step(soma.v, dt);
         hasSpiked = ais.hasSpiked;
-
+        // ===== 更新放电率估计 =====
+        firingRate += (-firingRate / tau_firing_rate) * dt;
+        if (hasSpiked) {
+            firingRate += 1.0 / tau_firing_rate;
+        }
         // 6. 放电时自主通知
         //    这是神经元的内在行为，不需要外部触发
         if (hasSpiked && onSpikeCallback) {
@@ -160,6 +167,7 @@ public:
         ais.v = -65.0;
         ais.refractoryTimer = 0.0;
         hasSpiked = false;
+        firingRate = 0.0;
     }
 
     int branchCount() const { return (int)branches.size(); }

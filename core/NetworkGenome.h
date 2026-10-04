@@ -70,12 +70,15 @@ inline NetworkGenome defaultVisualGenome() {
         {"V4",    3, 50.0,  80.0, 12.0,  3,  1,  1},
         {"IT",    4, 50.0, 110.0, 18.0, 10,  3,  0},
         {"H",     5, 50.0, 150.0, 20.0, 30, 10,  0},
+        {"PFC",   7, 20.0, 110.0, 15.0, 12,  3,  0},
         {"S1_3a", 9, 20.0, 150.0,  8.0,  3,  1,  0},
         {"S1_3b",10, 30.0, 160.0,  8.0,  4,  1,  0},
         {"S1_1", 11, 30.0, 180.0,  8.0,  3,  1,  0},
-        {"S1_2", 12, 20.0, 200.0,  8.0,  2,  0,  0}
+        {"S1_2", 12, 20.0, 200.0,  8.0,  2,  0,  0},
+        {"BG",   13, 20.0,  70.0, 10.0,  4,  1,  0},
+        {"THAL", 15, 50.0,  70.0, 10.0,  4,  1,  0},
+        {"M1",   16, 80.0,  70.0, 10.0,  4,  1,  0}
     };
-
     // V1 -> V2
     ConnectionGenome v1v2;
     v1v2.fromRegion = "V1";
@@ -191,10 +194,103 @@ inline NetworkGenome defaultVisualGenome() {
     s1_1_to_2.weight = 4.0;
     s1_1_to_2.delayMs = 2.0;
 
+    // ===== IT → PFC =====
+    ConnectionGenome itPFC;
+    itPFC.fromRegion = "IT";
+    itPFC.toRegion = "PFC";
+    itPFC.isFeedforward = true;
+    itPFC.explicitMapping = {
+        {0,0},{0,1},{1,2},{1,3},{2,4},{2,5},{3,6},{3,7},{4,8},{4,9},
+        {5,10},{5,11},{6,0},{6,2},{7,1},{7,3},{8,4},{8,6},{9,5},{9,7}
+    };
+    itPFC.weight = 5.0;
+    itPFC.delayMs = 3.0;
+
+    // ===== H → PFC =====
+    ConnectionGenome hPFC;
+    hPFC.fromRegion = "H";
+    hPFC.toRegion = "PFC";
+    hPFC.isFeedforward = true;
+    hPFC.explicitMapping = {
+        {0,0},{1,0},{2,0},{3,1},{4,1},{5,1},{6,2},{7,2},{8,2},
+        {9,3},{10,3},{11,3},{12,4},{13,4},{14,4},{15,5},{16,5},{17,5},
+        {18,6},{19,6},{20,6},{21,7},{22,7},{23,7},{24,8},{25,8},{26,8},
+        {27,9},{28,9},{29,9}
+    };
+    hPFC.weight = 4.0;
+    hPFC.delayMs = 4.0;
+
+    // ===== S1_2 → PFC =====
+    ConnectionGenome s1_2_to_PFC;
+    s1_2_to_PFC.fromRegion = "S1_2";
+    s1_2_to_PFC.toRegion = "PFC";
+    s1_2_to_PFC.isFeedforward = true;
+    s1_2_to_PFC.explicitMapping = {{0, 4}, {0, 5}, {1, 6}, {1, 7}};
+    s1_2_to_PFC.weight = 5.0;
+    s1_2_to_PFC.delayMs = 3.0;
+
+    // ===== V4 → PFC =====
+    ConnectionGenome v4PFC;
+    v4PFC.fromRegion = "V4";
+    v4PFC.toRegion = "PFC";
+    v4PFC.isFeedforward = true;
+    v4PFC.explicitMapping = {{0,8},{1,9},{2,10}};
+    v4PFC.weight = 4.0;
+    v4PFC.delayMs = 4.0;
+
+    // ===== V2 → PFC =====
+    ConnectionGenome v2PFC;
+    v2PFC.fromRegion = "V2";
+    v2PFC.toRegion = "PFC";
+    v2PFC.isFeedforward = true;
+    v2PFC.explicitMapping = {{0,11},{1,0},{2,1}};
+    v2PFC.weight = 3.0;
+    v2PFC.delayMs = 5.0;
+
+    // ===== PFC → BG =====
+    ConnectionGenome pfcBG;
+    pfcBG.fromRegion = "PFC";
+    pfcBG.toRegion = "BG";
+    pfcBG.isFeedforward = true;
+    pfcBG.explicitMapping = {
+        {0,0},{1,1},{2,2},{3,3},{4,0},{5,1},{6,2},{7,3}
+    };
+    pfcBG.weight = 6.0;
+    pfcBG.delayMs = 3.0;
+
+    // ===== BG → THAL =====
+    ConnectionGenome bgTHAL;
+    bgTHAL.fromRegion = "BG";
+    bgTHAL.toRegion = "THAL";
+    bgTHAL.isFeedforward = true;
+    bgTHAL.explicitMapping = {{0,0},{1,1},{2,2},{3,3}};
+    bgTHAL.weight = 8.0;
+    bgTHAL.delayMs = 2.0;
+
+    // ===== THAL → M1 =====
+    ConnectionGenome thalM1;
+    thalM1.fromRegion = "THAL";
+    thalM1.toRegion = "M1";
+    thalM1.isFeedforward = true;
+    thalM1.explicitMapping = {{0,0},{1,1},{2,2},{3,3}};
+    thalM1.weight = 10.0;
+    thalM1.delayMs = 2.0;
+
+    // ===== THAL → PFC（反馈，闭合环路）=====
+    ConnectionGenome thalPFC;
+    thalPFC.fromRegion = "THAL";
+    thalPFC.toRegion = "PFC";
+    thalPFC.isFeedforward = false;
+    thalPFC.explicitMapping = {{0,0},{1,1},{2,2},{3,3}};
+    thalPFC.weight = 0.5;
+    thalPFC.delayMs = 4.0;
+
     g.connections = {
-        v1v2, v2v4, v4it, itH,           // 前馈
-        itv4, v4v2, v2v1, hIT,             // 反馈
-        s1_3a_to_1,s1_3b_to_1,s1_1_to_2
+        v1v2, v2v4, v4it, itH,               // 视觉前馈
+        itv4, v4v2, v2v1, hIT,               // 视觉反馈
+        s1_3a_to_1, s1_3b_to_1, s1_1_to_2,   // 体感通路
+        itPFC, hPFC, s1_2_to_PFC, v4PFC, v2PFC,  // PFC 输入
+        pfcBG, bgTHAL, thalM1, thalPFC       // 行动通路
     };
 
     return g;

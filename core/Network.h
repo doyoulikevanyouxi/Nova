@@ -52,6 +52,12 @@ public:
     std::vector<int> s1_1_neurons;
     std::vector<int> s1_2_neurons;
 
+    // ===== 行动系统 =====
+    std::vector<int> pfcNeurons;
+    std::vector<int> bgNeurons;
+    std::vector<int> thalNeurons;
+    std::vector<int> m1Neurons;
+
     double touchSignal = 0.0;
     double painSignal = 0.0;
     double bodyIntegrity = 1.0;
@@ -65,6 +71,8 @@ public:
     bool daFromValence = false;    // DA 由效价驱动
     bool daFromCuriosity = false;  // DA 由好奇心驱动
     bool htFromCuriosity = false;  // 5-HT 由好奇心驱动
+
+
 
     // ===== 创建区域 =====
     void addRegion(const std::string& name,
@@ -265,6 +273,7 @@ public:
                 };
         }
         initS1();
+        initActionSystem();
     }
     // ===== 喂食 =====
     void feed(double amount) {
@@ -346,6 +355,62 @@ public:
         }
     }
 
+    // ===== 初始化行动系统 =====
+    void initActionSystem() {
+        auto collect = [&](const char* name, std::vector<int>& out) {
+            auto* r = getRegion(name);
+            if (!r) return;
+            for (int id : r->neurons) {
+                if (neurons[id].type.name == "Pyramidal") {
+                    out.push_back(id);
+                }
+            }
+        };
+        collect("PFC", pfcNeurons);
+        collect("BG", bgNeurons);
+        collect("THAL", thalNeurons);
+        collect("M1", m1Neurons);
+    }
+
+    // ===== 计算 actionOutput =====
+    // 从 M1 的平均放电率计算行动标量
+    // 返回 [-1, +1]
+    // ===== 计算 actionOutput =====
+    double getActionOutput() const {
+        if (m1Neurons.empty()) return 0.0;
+
+        double sum = 0.0;
+        for (int id : m1Neurons) {
+            sum += neurons[id].firingRate;
+        }
+        double avgM1 = sum / m1Neurons.size();
+
+        // 死区：低于 5 Hz 视为安静
+        double deadZone = 0.005;
+        if (avgM1 <= deadZone) return 0.0;
+
+        // 增益：20 Hz 时接近饱和
+        return std::tanh((avgM1 - deadZone) * 30.0);
+    }
+
+    // ===== 计算 PFC 注意力 =====
+    double getPFCAttention() const {
+        if (pfcNeurons.empty()) return 0.0;
+
+        double sum = 0.0;
+        for (int id : pfcNeurons) {
+            sum += neurons[id].firingRate;
+        }
+        double avgPFC = sum / pfcNeurons.size();
+
+        // 死区：低于 3 Hz 视为无注意
+        double deadZone = 0.003;
+        if (avgPFC <= deadZone) return 0.0;
+
+        double attention = (avgPFC - deadZone) * 30.0;
+        if (attention > 1.0) attention = 1.0;
+        return attention;
+    }
 
     // ===== 外部接口 =====
     void applyTouch(double amount) { externalTouch = amount; }
