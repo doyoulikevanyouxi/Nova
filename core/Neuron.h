@@ -140,6 +140,12 @@ public:
         // 5. AIS 决定放电
         ais.step(soma.v, dt);
         hasSpiked = ais.hasSpiked;
+
+        // 6. AHP：AIS 放电 → 钙内流
+        if (hasSpiked) {
+            soma.onSpike();
+        }
+
         // ===== 更新放电率估计 =====
         firingRate += (-firingRate / tau_firing_rate) * dt;
         if (hasSpiked) {

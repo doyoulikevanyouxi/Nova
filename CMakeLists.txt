@@ -351,6 +351,25 @@ add_executable(test_action
     core/CuriosityInterface.h
     core/RandomUtils.h
 )
+
+add_executable(test_ahp
+    test/test_ahp.cpp
+    core/Network.h
+    core/Neuron.h
+    core/NeuronType.h
+    core/DendriteBranch.h
+    core/DendriteCluster.h
+    core/Soma.h
+    core/AxonInitialSegment.h
+    core/Synapse.h
+    core/SynapsePopulation.h
+    core/Region.h
+    core/NetworkGenome.h
+    core/MetabolicPool.h
+    core/ValenceSystem.h
+    core/CuriosityInterface.h
+    core/RandomUtils.h
+)
 target_link_libraries(Nova Qt${QT_VERSION_MAJOR}::Core)
 
 include(GNUInstallDirs)

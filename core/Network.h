@@ -422,7 +422,8 @@ private:
         auto* region = getRegion(rg.name);
         if (!region) return;
 
-        // 分类神经元
+        bool isH = (rg.name == "H");
+
         std::vector<int> pyramidal, basket, chandelier;
         for (int id : region->neurons) {
             const std::string& t = neurons[id].type.name;
@@ -431,44 +432,55 @@ private:
             else chandelier.push_back(id);
         }
 
-        // P → P（概率连接）
+        // ===== P → P =====
         for (size_t i = 0; i < pyramidal.size(); ++i) {
             for (size_t j = i + 1; j < pyramidal.size(); ++j) {
                 if (RandomUtils::uniform() < rg.p2pProb) {
-                    connect(pyramidal[i], pyramidal[j], 0, 0,
-                            rg.excWeight, 1.0, true);
-                    connect(pyramidal[j], pyramidal[i], 0, 0,
-                            rg.excWeight, 1.0, true);
+                    // H 的递归突触：低权重，纯 AMPA
+                    double w = isH ? 0.05 : rg.excWeight;
+                    int id1 = connect(pyramidal[i], pyramidal[j], 0, 0,
+                                      w, 1.0, true);
+                    int id2 = connect(pyramidal[j], pyramidal[i], 0, 0,
+                                      w, 1.0, true);
+
+                    if (isH) {
+                        synapses.synapses[id1].ampaFraction = 1.0;
+                        synapses.synapses[id1].nmdaFraction = 0.0;
+                        synapses.synapses[id1].tau_ampa = 5.0;
+                        synapses.synapses[id2].ampaFraction = 1.0;
+                        synapses.synapses[id2].nmdaFraction = 0.0;
+                        synapses.synapses[id2].tau_ampa = 5.0;
+                    }
                 }
             }
         }
 
-        // P → B
+        // ===== P → B =====
         for (int p : pyramidal) {
             for (int b : basket) {
-                connect(p, b, 0, 0, rg.excWeight * 2.0, 1.0, true);
+                double w = isH ? 1.0 : rg.excWeight * 2.0;
+                connect(p, b, 0, 0, w, 1.0, true);
             }
         }
 
-        // B → P（GABA）
+        // ===== B → P（H 的抑制要强）=====
         for (int b : basket) {
             for (int p : pyramidal) {
-                int id = connect(b, p, 0, 0,
-                                 std::abs(rg.inhWeight), 1.0, false);
+                double w = isH ? 30.0 : std::abs(rg.inhWeight);
+                int id = connect(b, p, 0, 0, w, 1.0, false);
                 synapses.synapses[id].isPlastic = false;
             }
         }
 
-        // C → P（GABA）
+        // ===== C → P =====
         for (int c : chandelier) {
             for (int p : pyramidal) {
-                int id = connect(c, p, 0, 0,
-                                 std::abs(rg.inhWeight) * 0.7, 1.0, false);
+                double w = isH ? 15.0 : std::abs(rg.inhWeight) * 0.7;
+                int id = connect(c, p, 0, 0, w, 1.0, false);
                 synapses.synapses[id].isPlastic = false;
             }
         }
     }
-
     // ===== 区域间连接 =====
     void buildInterRegion(const ConnectionGenome& cg) {
         auto* from = getRegion(cg.fromRegion);
